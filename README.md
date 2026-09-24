@@ -1,12 +1,16 @@
 # End-to-End MLOps Pipeline for House Price Prediction
 
+[![Live Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://house-price-prediction-system360.streamlit.app/)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-009688.svg?logo=fastapi)](https://fastapi.tiangolo.com)
-[![Streamlit](https://img.shields.io/badge/Streamlit-1.30+-FF4B4B.svg?logo=streamlit)](https://streamlit.io)
+[![Streamlit](https://img.shields.io/badge/Streamlit-1.30+-FF4B4B.svg?logo=streamlit)](https://house-price-prediction-system360.streamlit.app/)
 [![MLflow](https://img.shields.io/badge/MLflow-2.10+-0194E2.svg?logo=mlflow)](https://mlflow.org)
 [![DVC](https://img.shields.io/badge/DVC-3.0+-945DD6.svg?logo=dvc)](https://dvc.org)
 [![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED.svg?logo=docker)](https://www.docker.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+> 🚀 **Live Interactive Web Application:** **[https://house-price-prediction-system360.streamlit.app/](https://house-price-prediction-system360.streamlit.app/)**  
+> 🔗 **Live FastAPI Swagger Docs (Render):** **[https://house-price-prediction-system-9clo.onrender.com/docs](https://house-price-prediction-system-9clo.onrender.com/docs)**
 
 > A complete, production-grade Machine Learning Operations (MLOps) system demonstrating the entire lifecycle of an enterprise tabular regression model: from automated data validation and experiment tracking to model versioning, REST API serving, containerization, CI/CD, and operational telemetry monitoring.
 
@@ -438,7 +442,9 @@ uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
 
 ## 16. Streamlit Web Interface
 
-Launch the interactive web UI:
+> 🌐 **Live Deployed Web Application:** **[https://house-price-prediction-system360.streamlit.app/](https://house-price-prediction-system360.streamlit.app/)**
+
+Or launch locally on your computer:
 
 ```bash
 streamlit run app/streamlit_app.py
