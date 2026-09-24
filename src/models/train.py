@@ -5,7 +5,8 @@ import json
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
+
 import joblib
 import mlflow
 import mlflow.sklearn
@@ -23,7 +24,7 @@ from src.utils.config import get_logger, get_project_root, load_config, load_par
 logger = get_logger("model_training")
 
 
-def calculate_metrics(y_true: np.ndarray, y_pred: np.ndarray) -> Dict[str, float]:
+def calculate_metrics(y_true: np.ndarray, y_pred: np.ndarray) -> dict[str, float]:
     """Calculate regression metrics: MAE, RMSE, R2.
     
     Args:
@@ -45,7 +46,7 @@ def calculate_metrics(y_true: np.ndarray, y_pred: np.ndarray) -> Dict[str, float
     }
 
 
-def get_candidate_models(params: Dict[str, Any]) -> Dict[str, Any]:
+def get_candidate_models(params: dict[str, Any]) -> dict[str, Any]:
     """Instantiate candidate regression models using hyperparameters from params.yaml.
     
     Args:
@@ -104,9 +105,9 @@ def get_candidate_models(params: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def train_and_evaluate_models(
-    train_path: Optional[str] = None,
-    val_path: Optional[str] = None
-) -> Tuple[str, Dict[str, Any], Dict[str, Any]]:
+    train_path: str | None = None,
+    val_path: str | None = None
+) -> tuple[str, dict[str, Any], dict[str, Any]]:
     """Train all candidate models, log to MLflow, and select the best model based on validation metrics.
     
     Args:

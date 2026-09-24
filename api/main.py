@@ -5,7 +5,7 @@ import os
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 from fastapi import FastAPI, HTTPException, Request, Response, status
 from fastapi.middleware.cors import CORSMiddleware
@@ -98,11 +98,11 @@ async def monitor_requests(request: Request, call_next):
         duration = time.time() - start_time
         HTTP_REQUESTS_TOTAL.labels(method=method, endpoint=endpoint, status="500").inc()
         logger.error("%s %s failed after %.4fs: %s", method, endpoint, duration, exc)
-        raise exc
+        raise
 
 
 @app.get("/", tags=["General"])
-def root_endpoint() -> Dict[str, Any]:
+def root_endpoint() -> dict[str, Any]:
     """Root endpoint providing system metadata and active endpoints."""
     return {
         "title": "End-to-End MLOps Pipeline for House Price Prediction",
@@ -157,7 +157,7 @@ def get_model_information() -> ModelInfoResponse:
         logger.error("Failed to read model info metadata: %s", err)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error reading model information: {str(err)}"
+            detail=f"Error reading model information: {err!s}"
         )
 
 
@@ -203,7 +203,7 @@ def predict(features: HouseFeaturesInput) -> PredictionOutput:
     except Exception as exc:
         PREDICTION_ERRORS_TOTAL.inc()
         logger.error("Unexpected prediction failure: %s", exc)
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Inference failed: {str(exc)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Inference failed: {exc!s}")
 
 
 @app.post("/predict/batch", response_model=BatchPredictionOutput, tags=["Inference"])
@@ -251,7 +251,7 @@ def predict_batch(batch_input: BatchHouseFeaturesInput) -> BatchPredictionOutput
     except Exception as exc:
         PREDICTION_ERRORS_TOTAL.inc()
         logger.error("Batch prediction failure: %s", exc)
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Batch inference failed: {str(exc)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Batch inference failed: {exc!s}")
 
 
 @app.get("/metrics", tags=["Monitoring"])

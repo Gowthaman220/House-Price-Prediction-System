@@ -2,7 +2,8 @@
 
 import pandas as pd
 import pytest
-from src.data.ingestion import generate_benchmark_dataset, ingest_data
+
+from src.data.ingestion import generate_benchmark_dataset
 from src.data.validation import (
     EXPECTED_CATEGORICAL_COLUMNS,
     EXPECTED_NUMERICAL_COLUMNS,

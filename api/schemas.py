@@ -1,7 +1,8 @@
 """Pydantic schemas for FastAPI request and response validation."""
 
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Literal, Optional
+from typing import Any, Literal
+
 from pydantic import BaseModel, Field
 
 
@@ -87,7 +88,7 @@ class HouseFeaturesInput(BaseModel):
 
 class BatchHouseFeaturesInput(BaseModel):
     """Schema for batch prediction requests."""
-    properties: List[HouseFeaturesInput] = Field(..., description="List of property features for inference")
+    properties: list[HouseFeaturesInput] = Field(..., description="List of property features for inference")
 
 
 class PredictionOutput(BaseModel):
@@ -102,7 +103,7 @@ class PredictionOutput(BaseModel):
 
 class BatchPredictionOutput(BaseModel):
     """Schema for batch prediction response."""
-    predictions: List[PredictionOutput]
+    predictions: list[PredictionOutput]
     total_count: int
 
 
@@ -121,6 +122,6 @@ class ModelInfoResponse(BaseModel):
     model_version: str
     run_id: str
     training_date: str
-    features: Dict[str, List[str]]
-    validation_metrics: Dict[str, Any]
-    all_model_comparison: Optional[Dict[str, Any]] = None
+    features: dict[str, list[str]]
+    validation_metrics: dict[str, Any]
+    all_model_comparison: dict[str, Any] | None = None

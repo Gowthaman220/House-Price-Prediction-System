@@ -1,10 +1,9 @@
 """Tests for model loading, evaluation metrics, and inference."""
 
-import os
-from pathlib import Path
 import numpy as np
 import pytest
-from src.models.predict import HousePricePredictor, get_predictor, predict_price
+
+from src.models.predict import get_predictor, predict_price
 from src.models.train import calculate_metrics
 from src.utils.config import get_project_root
 

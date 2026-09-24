@@ -3,7 +3,8 @@
 import argparse
 import json
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any
+
 import joblib
 import matplotlib.pyplot as plt
 import numpy as np
@@ -21,10 +22,10 @@ plt.rcParams["figure.dpi"] = 300
 
 
 def evaluate_model(
-    test_path: Optional[str] = None,
-    model_path: Optional[str] = None,
-    output_dir: Optional[str] = None
-) -> Dict[str, Any]:
+    test_path: str | None = None,
+    model_path: str | None = None,
+    output_dir: str | None = None
+) -> dict[str, Any]:
     """Evaluate the trained best model on the holdout test set and generate report artifacts.
     
     Args:
@@ -113,7 +114,7 @@ def evaluate_model(
         xy=(0.05, 0.82),
         xycoords="axes fraction",
         fontsize=11,
-        bbox=dict(boxstyle="round,pad=0.5", fc="white", ec="#cccccc", lw=1.2)
+        bbox={"boxstyle": "round,pad=0.5", "fc": "white", "ec": "#cccccc", "lw": 1.2}
     )
     plt.legend(loc="lower right", frameon=True)
     plt.tight_layout()
@@ -125,7 +126,7 @@ def evaluate_model(
     # 2. Plot: Residuals Distribution
     residuals = y_test - y_pred
     plt.figure(figsize=(8, 6))
-    n, bins, patches = plt.hist(residuals, bins=30, color="#2ca02c", alpha=0.7, edgecolor="white", density=True)
+    _n, _bins, _patches = plt.hist(residuals, bins=30, color="#2ca02c", alpha=0.7, edgecolor="white", density=True)
     # Fit normal distribution curve
     mu, std = np.mean(residuals), np.std(residuals)
     x_axis = np.linspace(residuals.min(), residuals.max(), 100)
@@ -152,9 +153,9 @@ def evaluate_model(
         models = list(comp_data.keys())
         r2_vals = [comp_data[m]["r2"] for m in models]
         rmse_vals = [comp_data[m]["rmse"] for m in models]
-        mae_vals = [comp_data[m]["mae"] for m in models]
+        [comp_data[m]["mae"] for m in models]
 
-        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(13, 5))
+        _fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(13, 5))
         
         # R2 Bar Chart
         bars1 = ax1.bar(models, r2_vals, color="#4285F4", width=0.55, edgecolor="black", alpha=0.85)

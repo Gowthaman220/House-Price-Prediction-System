@@ -2,7 +2,8 @@
 
 import argparse
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
+
 import joblib
 import numpy as np
 import pandas as pd
@@ -18,7 +19,7 @@ class HousePricePredictor:
     _instance = None
     _model = None
 
-    def __init__(self, model_path: Optional[str] = None):
+    def __init__(self, model_path: str | None = None):
         """Initialize the predictor and load the model pipeline."""
         root = get_project_root()
         config = load_config()
@@ -38,7 +39,7 @@ class HousePricePredictor:
         logger.info("Loading model artifact from: %s", self.model_path)
         return joblib.load(self.model_path)
 
-    def predict(self, data: Union[Dict[str, Any], List[Dict[str, Any]], pd.DataFrame]) -> np.ndarray:
+    def predict(self, data: dict[str, Any] | list[dict[str, Any]] | pd.DataFrame) -> np.ndarray:
         """Run inference on input property feature(s).
         
         Args:
@@ -72,10 +73,10 @@ class HousePricePredictor:
         return np.round(predictions, 2)
 
 
-_predictor_instance: Optional[HousePricePredictor] = None
+_predictor_instance: HousePricePredictor | None = None
 
 
-def get_predictor(model_path: Optional[str] = None) -> HousePricePredictor:
+def get_predictor(model_path: str | None = None) -> HousePricePredictor:
     """Singleton getter for the HousePricePredictor instance."""
     global _predictor_instance
     if _predictor_instance is None or model_path is not None:
@@ -83,7 +84,7 @@ def get_predictor(model_path: Optional[str] = None) -> HousePricePredictor:
     return _predictor_instance
 
 
-def predict_price(property_features: Dict[str, Any], model_path: Optional[str] = None) -> float:
+def predict_price(property_features: dict[str, Any], model_path: str | None = None) -> float:
     """Convenience function to predict price for a single property dictionary."""
     predictor = get_predictor(model_path=model_path)
     preds = predictor.predict(property_features)

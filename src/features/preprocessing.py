@@ -2,7 +2,7 @@
 
 import argparse
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+
 import joblib
 import pandas as pd
 from sklearn.compose import ColumnTransformer
@@ -17,8 +17,8 @@ logger = get_logger("preprocessing")
 
 
 def build_preprocessor(
-    numerical_features: List[str],
-    categorical_features: List[str],
+    numerical_features: list[str],
+    categorical_features: list[str],
     num_strategy: str = "median",
     cat_strategy: str = "most_frequent",
     scale_numeric: bool = True
@@ -64,7 +64,7 @@ def split_data(
     test_size: float = 0.2,
     val_size: float = 0.1,
     random_state: int = 42
-) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     """Split dataset into train, validation, and test sets.
     
     Args:
@@ -98,9 +98,9 @@ def split_data(
 
 
 def run_preprocessing_pipeline(
-    raw_path: Optional[str] = None,
-    output_dir: Optional[str] = None
-) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, ColumnTransformer]:
+    raw_path: str | None = None,
+    output_dir: str | None = None
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, ColumnTransformer]:
     """Execute end-to-end preprocessing, data splitting, and preprocessor persistence.
     
     Args:
@@ -127,7 +127,7 @@ def run_preprocessing_pipeline(
     # Load feature definitions
     num_cols = config.get("features", {}).get("numerical", [])
     cat_cols = config.get("features", {}).get("categorical", [])
-    target_col = config.get("data", {}).get("target_column", "SalePrice")
+    config.get("data", {}).get("target_column", "SalePrice")
 
     test_size = float(params.get("data", {}).get("test_size", 0.2))
     val_size = float(params.get("data", {}).get("val_size", 0.1))

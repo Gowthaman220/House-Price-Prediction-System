@@ -3,7 +3,7 @@
 import argparse
 import os
 from pathlib import Path
-from typing import Optional
+
 import numpy as np
 import pandas as pd
 
@@ -15,7 +15,7 @@ logger = get_logger("data_ingestion")
 def generate_benchmark_dataset(
     num_samples: int = 1500,
     random_state: int = 42,
-    output_path: Optional[str] = None
+    output_path: str | None = None
 ) -> pd.DataFrame:
     """Generate a realistic benchmark House Price dataset modeled on the Ames Housing benchmark.
     
@@ -157,8 +157,8 @@ def generate_benchmark_dataset(
 
 
 def ingest_data(
-    source_path_or_url: Optional[str] = None,
-    output_path: Optional[str] = None
+    source_path_or_url: str | None = None,
+    output_path: str | None = None
 ) -> pd.DataFrame:
     """Ingest raw house price data from a specified path, URL, or fallback to generated benchmark.
     
@@ -178,7 +178,7 @@ def ingest_data(
     # Check if a custom source is given
     source = source_path_or_url or os.getenv("DATA_SOURCE_URL")
     
-    if source and (source.startswith("http://") or source.startswith("https://")):
+    if source and (source.startswith(("http://", "https://"))):
         logger.info("Downloading dataset from remote URL: %s", source)
         df = pd.read_csv(source)
         df.to_csv(target_dest, index=False)

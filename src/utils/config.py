@@ -4,7 +4,8 @@ import logging
 import os
 import sys
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any
+
 import yaml
 from dotenv import load_dotenv
 
@@ -17,7 +18,7 @@ def get_project_root() -> Path:
     return Path(__file__).resolve().parent.parent.parent
 
 
-def load_config(config_path: Optional[str] = None) -> Dict[str, Any]:
+def load_config(config_path: str | None = None) -> dict[str, Any]:
     """Load configuration from a YAML file.
     
     Args:
@@ -46,7 +47,7 @@ def load_config(config_path: Optional[str] = None) -> Dict[str, Any]:
     return config or {}
 
 
-def load_params(params_path: Optional[str] = None) -> Dict[str, Any]:
+def load_params(params_path: str | None = None) -> dict[str, Any]:
     """Load parameters from params.yaml.
     
     Args:

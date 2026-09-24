@@ -3,8 +3,7 @@
 import argparse
 import sys
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
-import numpy as np
+
 import pandas as pd
 
 from src.utils.config import get_logger, get_project_root, load_config
@@ -14,7 +13,6 @@ logger = get_logger("data_validation")
 
 class DataValidationError(Exception):
     """Custom exception raised when data validation fails."""
-    pass
 
 
 EXPECTED_NUMERICAL_COLUMNS = [
@@ -33,7 +31,7 @@ def validate_dataset(
     df: pd.DataFrame,
     is_training: bool = True,
     missing_threshold: float = 0.20
-) -> Tuple[bool, List[str]]:
+) -> tuple[bool, list[str]]:
     """Validate DataFrame against schema, ranges, data types, and null thresholds.
     
     Args:
