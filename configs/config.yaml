@@ -1,0 +1,56 @@
+project_name: "End-to-End MLOps Pipeline for House Price Prediction"
+version: "1.0.0"
+
+data:
+  raw_path: "data/raw/house_prices.csv"
+  interim_path: "data/interim/cleaned_house_prices.csv"
+  train_path: "data/processed/train.csv"
+  test_path: "data/processed/test.csv"
+  val_path: "data/processed/val.csv"
+  target_column: "SalePrice"
+  test_size: 0.2
+  val_size: 0.1
+  random_state: 42
+
+features:
+  numerical:
+    - "OverallQual"
+    - "GrLivArea"
+    - "TotalBsmtSF"
+    - "GarageCars"
+    - "FullBath"
+    - "YearBuilt"
+    - "YearRemodAdd"
+    - "LotArea"
+    - "Fireplaces"
+  categorical:
+    - "Neighborhood"
+    - "BldgType"
+    - "HouseStyle"
+    - "CentralAir"
+
+models:
+  save_dir: "models"
+  best_model_path: "models/best_model.joblib"
+  preprocessor_path: "models/preprocessor.joblib"
+  model_info_path: "models/model_info.json"
+
+reports:
+  dir: "reports"
+  figures_dir: "reports/figures"
+  metrics_file: "reports/evaluation_metrics.json"
+
+mlflow:
+  experiment_name: "house-price-prediction"
+  tracking_uri: "sqlite:///mlflow.db"
+  artifact_location: "./mlruns"
+
+api:
+  host: "127.0.0.1"
+  port: 8000
+  reload: false
+
+frontend:
+  host: "127.0.0.1"
+  port: 8501
+  api_url: "http://127.0.0.1:8000"

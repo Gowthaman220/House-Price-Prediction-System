@@ -1,0 +1,57 @@
+stages:
+  ingest:
+    cmd: python -m src.data.ingestion
+    deps:
+      - src/data/ingestion.py
+      - configs/config.yaml
+    outs:
+      - data/raw/house_prices.csv
+
+  validate:
+    cmd: python -m src.data.validation
+    deps:
+      - src/data/validation.py
+      - data/raw/house_prices.csv
+
+  preprocess:
+    cmd: python -m src.features.preprocessing
+    deps:
+      - src/features/preprocessing.py
+      - data/raw/house_prices.csv
+    params:
+      - data
+      - preprocessing
+    outs:
+      - data/processed/train.csv
+      - data/processed/val.csv
+      - data/processed/test.csv
+      - models/preprocessor.joblib
+
+  train:
+    cmd: python -m src.models.train
+    deps:
+      - src/models/train.py
+      - data/processed/train.csv
+      - data/processed/val.csv
+    params:
+      - train
+    outs:
+      - models/best_model.joblib
+      - models/model_info.json
+
+  evaluate:
+    cmd: python -m src.models.evaluate
+    deps:
+      - src/models/evaluate.py
+      - models/best_model.joblib
+      - data/processed/test.csv
+    metrics:
+      - reports/evaluation_metrics.json:
+          cache: false
+    plots:
+      - reports/figures/actual_vs_predicted.png:
+          cache: false
+      - reports/figures/residuals_distribution.png:
+          cache: false
+      - reports/figures/model_comparison.png:
+          cache: false

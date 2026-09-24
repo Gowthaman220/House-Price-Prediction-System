@@ -1,0 +1,65 @@
+{
+  "model_name": "Linear Regression",
+  "model_version": "1.0.0",
+  "run_id": "1852953269f243b18790ed093488aee6",
+  "training_date": "2026-09-24T18:57:33.271113",
+  "train_samples": 1050,
+  "val_samples": 150,
+  "features": {
+    "numerical": [
+      "OverallQual",
+      "GrLivArea",
+      "TotalBsmtSF",
+      "GarageCars",
+      "FullBath",
+      "YearBuilt",
+      "YearRemodAdd",
+      "LotArea",
+      "Fireplaces"
+    ],
+    "categorical": [
+      "Neighborhood",
+      "BldgType",
+      "HouseStyle",
+      "CentralAir"
+    ]
+  },
+  "target": "SalePrice",
+  "validation_metrics": {
+    "mae": 13104.98,
+    "rmse": 16618.21,
+    "r2": 0.9704,
+    "training_duration": 1.138,
+    "run_id": "1852953269f243b18790ed093488aee6"
+  },
+  "all_model_comparison": {
+    "Linear Regression": {
+      "mae": 13104.98,
+      "rmse": 16618.21,
+      "r2": 0.9704,
+      "training_duration": 1.138,
+      "run_id": "1852953269f243b18790ed093488aee6"
+    },
+    "Random Forest": {
+      "mae": 24602.78,
+      "rmse": 31193.33,
+      "r2": 0.8959,
+      "training_duration": 0.372,
+      "run_id": "4604ab004e884961a990ad2a2df8dddb"
+    },
+    "Gradient Boosting": {
+      "mae": 16535.93,
+      "rmse": 21230.58,
+      "r2": 0.9518,
+      "training_duration": 0.932,
+      "run_id": "1fc1d7486b394283955f164e3f1107b5"
+    },
+    "XGBoost": {
+      "mae": 15806.18,
+      "rmse": 20291.3,
+      "r2": 0.9559,
+      "training_duration": 0.541,
+      "run_id": "b67a8ba0666a42db8f55f41c17e2e2c9"
+    }
+  }
+}

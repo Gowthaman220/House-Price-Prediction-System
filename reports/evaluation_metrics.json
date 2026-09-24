@@ -1,0 +1,10 @@
+{
+  "test_mae": 13514.24,
+  "test_rmse": 17102.54,
+  "test_r2": 0.9664,
+  "test_mape_percent": 3.29,
+  "test_samples": 300,
+  "min_actual_price": 210800.0,
+  "max_actual_price": 750000.0,
+  "mean_actual_price": 443245.0
+}

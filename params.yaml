@@ -1,0 +1,38 @@
+data:
+  raw_path: "data/raw/house_prices.csv"
+  processed_dir: "data/processed"
+  test_size: 0.2
+  val_size: 0.1
+  random_state: 42
+  target: "SalePrice"
+
+preprocessing:
+  numerical_imputer_strategy: "median"
+  categorical_imputer_strategy: "most_frequent"
+  scaler: "standard"
+
+train:
+  random_state: 42
+  cv_folds: 5
+  models:
+    linear_regression:
+      fit_intercept: true
+    random_forest:
+      n_estimators: 100
+      max_depth: 15
+      min_samples_split: 4
+      min_samples_leaf: 2
+      random_state: 42
+    gradient_boosting:
+      n_estimators: 120
+      learning_rate: 0.08
+      max_depth: 4
+      min_samples_split: 3
+      random_state: 42
+    xgboost:
+      n_estimators: 120
+      learning_rate: 0.08
+      max_depth: 4
+      subsample: 0.8
+      colsample_bytree: 0.8
+      random_state: 42
