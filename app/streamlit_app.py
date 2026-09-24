@@ -1,7 +1,9 @@
 """Streamlit Frontend Application for House Price Prediction MLOps System."""
 
+import json
 import os
 from datetime import datetime
+from pathlib import Path
 
 import pandas as pd
 import requests
@@ -69,25 +71,38 @@ st.markdown("""
 
 
 def check_api_health():
-    """Verify backend FastAPI connectivity."""
+    """Verify backend FastAPI connectivity or fallback to embedded model."""
     try:
-        resp = requests.get(f"{API_URL}/health", timeout=3)
+        resp = requests.get(f"{API_URL}/health", timeout=2)
         if resp.status_code == 200:
-            return True, resp.json()
-        return False, None
+            return True, resp.json(), "api"
     except Exception:
-        return False, None
+        pass
+
+    # Check if local model artifact is available for standalone cloud deployment
+    model_file = Path("models/best_model.joblib")
+    if model_file.exists():
+        return True, {"model_loaded": True, "service": "embedded-engine"}, "embedded"
+    return False, None, "offline"
 
 
 def get_model_info():
-    """Fetch active model metadata from FastAPI."""
+    """Fetch active model metadata from FastAPI or local model_info.json."""
     try:
-        resp = requests.get(f"{API_URL}/model-info", timeout=3)
+        resp = requests.get(f"{API_URL}/model-info", timeout=2)
         if resp.status_code == 200:
             return resp.json()
-        return None
     except Exception:
-        return None
+        pass
+
+    info_file = Path("models/model_info.json")
+    if info_file.exists():
+        try:
+            with open(info_file, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            return None
+    return None
 
 
 def main():
@@ -101,22 +116,26 @@ def main():
     )
 
     # Sidebar: System Status & Architecture Overview
-    is_healthy, health_data = check_api_health()
+    is_healthy, health_data, engine_mode = check_api_health()
     model_metadata = get_model_info()
 
     with st.sidebar:
         st.subheader("System Status")
-        if is_healthy:
+        if engine_mode == "api":
             st.markdown('<span class="status-badge-green">● FastAPI Backend: Connected</span>', unsafe_allow_html=True)
             st.caption(f"Endpoint: `{API_URL}`")
             if health_data and health_data.get("model_loaded"):
                 st.caption("Model Artifact: **Loaded in Memory**")
+        elif engine_mode == "embedded":
+            st.markdown('<span class="status-badge-green">● Model Engine: Embedded (Online)</span>', unsafe_allow_html=True)
+            st.caption("Mode: **Standalone Cloud Serving**")
+            st.caption("Artifact: `models/best_model.joblib`")
         else:
-            st.markdown('<span class="status-badge-red">● FastAPI Backend: Offline</span>', unsafe_allow_html=True)
+            st.markdown('<span class="status-badge-red">● Backend & Model: Offline</span>', unsafe_allow_html=True)
             st.warning(
-                f"Cannot reach `{API_URL}`.\n\n"
-                "Please start the backend server:\n"
-                "```bash\npython -m api.main\n```"
+                f"Cannot reach `{API_URL}` or local model.\n\n"
+                "Please run training:\n"
+                "```bash\npython -m src.models.train\n```"
             )
 
         st.divider()
@@ -245,38 +264,54 @@ def main():
             }
 
             if not is_healthy:
-                st.error("Cannot connect to FastAPI backend. Please launch the API server before predicting.")
+                st.error("Model engine is offline. Please verify trained model artifacts exist.")
             else:
-                with st.spinner("Executing inference pipeline via FastAPI..."):
-                    try:
-                        resp = requests.post(f"{API_URL}/predict", json=payload, timeout=5)
-                        if resp.status_code == 200:
-                            data = resp.json()
-                            pred_price = data.get("predicted_price", 0)
-                            formatted = data.get("formatted_price", f"${pred_price:,.2f}")
-                            model_used = data.get("model_name", "Best Model")
-                            
-                            st.markdown(f"""
-                            <div class="price-card">
-                                <div style="font-size: 1.1rem; opacity: 0.9; margin-bottom: 0.3rem;">Estimated Market Valuation</div>
-                                <div class="price-val">{formatted}</div>
-                                <div style="font-size: 0.9rem; opacity: 0.85; margin-top: 0.5rem;">
-                                    Inference served by <b>{model_used}</b> (v{data.get('model_version', '1.0')})
-                                </div>
+                with st.spinner("Executing inference pipeline..."):
+                    pred_data = None
+                    if engine_mode == "api":
+                        try:
+                            resp = requests.post(f"{API_URL}/predict", json=payload, timeout=5)
+                            if resp.status_code == 200:
+                                pred_data = resp.json()
+                        except Exception:
+                            pred_data = None
+
+                    if pred_data is None:
+                        try:
+                            from src.models.predict import predict_price
+                            predicted_val = predict_price(payload)
+                            m_info = model_metadata or {}
+                            pred_data = {
+                                "predicted_price": predicted_val,
+                                "formatted_price": f"${predicted_val:,.2f}",
+                                "currency": "USD",
+                                "model_name": m_info.get("model_name", "Linear Regression"),
+                                "model_version": m_info.get("model_version", "1.0.0"),
+                            }
+                        except Exception as err:
+                            st.error(f"Inference error: {err}")
+
+                    if pred_data:
+                        pred_price = pred_data.get("predicted_price", 0)
+                        formatted = pred_data.get("formatted_price", f"${pred_price:,.2f}")
+                        model_used = pred_data.get("model_name", "Best Model")
+                        
+                        st.markdown(f"""
+                        <div class="price-card">
+                            <div style="font-size: 1.1rem; opacity: 0.9; margin-bottom: 0.3rem;">Estimated Market Valuation</div>
+                            <div class="price-val">{formatted}</div>
+                            <div style="font-size: 0.9rem; opacity: 0.85; margin-top: 0.5rem;">
+                                Inference served by <b>{model_used}</b> (v{pred_data.get('model_version', '1.0')})
                             </div>
-                            """, unsafe_allow_html=True)
+                        </div>
+                        """, unsafe_allow_html=True)
 
-                            # Prediction Breakdown / Explanatory insights
-                            st.markdown("#### 💡 Valuation Breakdown & Key Drivers")
-                            col_a, col_b, col_c = st.columns(3)
-                            col_a.metric("Living Space Contribution", f"{gr_liv_area:,.0f} sqft", f"Quality Rating: {overall_qual}/10")
-                            col_b.metric("Basement & Garage", f"{total_bsmt_sf:,.0f} sqft basement", f"{garage_cars} Car Garage")
-                            col_c.metric("Location & Age", f"{neighborhood}", f"Built in {year_built}")
-
-                        else:
-                            st.error(f"Inference error ({resp.status_code}): {resp.text}")
-                    except Exception as err:
-                        st.error(f"Request failed: {err}")
+                        # Prediction Breakdown / Explanatory insights
+                        st.markdown("#### 💡 Valuation Breakdown & Key Drivers")
+                        col_a, col_b, col_c = st.columns(3)
+                        col_a.metric("Living Space Contribution", f"{gr_liv_area:,.0f} sqft", f"Quality Rating: {overall_qual}/10")
+                        col_b.metric("Basement & Garage", f"{total_bsmt_sf:,.0f} sqft basement", f"{garage_cars} Car Garage")
+                        col_c.metric("Location & Age", f"{neighborhood}", f"Built in {year_built}")
 
     with tab_models:
         st.markdown("### Model Comparison & Experiment Tracking")
